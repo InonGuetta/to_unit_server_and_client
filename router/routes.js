@@ -5,7 +5,7 @@ const router = express.Router();
 router.post('/create-post', createPost);
 router.get('/all-posts', getAllPosts);
 router.get('/one-post', getOnePost);
-router.delete('/delete-post', deletePost);
+router.delete('/delete-post/:id', deletePost);
 router.patch('/update-post/:id', updatePost);
 
 export default router;

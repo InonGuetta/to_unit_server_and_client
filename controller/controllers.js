@@ -43,35 +43,49 @@ export async function getOnePost(req, res) {
 
 export async function deletePost(req, res) {
     try {
-        const { title } = req.body;
-        if (!title || title.length == 0) {
-            return res.status(400).send({ message: "you insert empty" })
+        const { id } = req.params;
+        if (id.length === 0) {
+            return res.status(400).send({ message: "id its empty" })
         }
+        const toDelete = await post.findOneAndDelete({ _id: id })
+        if (!toDelete) {
+            return res.status(404).send({ message: "id its not found" })
+        }
+        res.status(200).send({ message: "the post deleted" })
 
-        const result = await post.findOneAndDelete({ title })
-        if (!result) {
-            return res.status(404).send({ message: "title not found" })
-        }
-        return res.status(200).send({ message: "deleted seccessed" })
     } catch (e) {
+        console.log("delete");
         res.status(500).send({ message: "deleted failed" })
     }
+
 }
 
 export async function updatePost(req, res) {
     try {
         const { id } = req.params;
-        const { title, msg } = req.body;
+        const { title, message, pictures } = req.body;
 
-        if(!title || !msg || title.length === 0 || msg.length === 0){
-            return res.status(400).send({message:"input not legal"})
-        }
+        const updateNumber = await post.findOne({ _id: id });
+        if (!updateNumber) return res.status(404).send({ message: 'not found' });
+
+        //התנאי מקריס את הקוד 
+        // if (!title || !message || pictures || title.length === 0 || message.length === 0 || pictures.length === 0) {
+        //     return res.status(400).send({ message: "input not legal" })
+        // }
+
+
         const toUpdate = await post.findOneAndUpdate(
             { _id: id },
-            { $set: { title, msg } },
-            {new:true}
+            { $set: { title, message, pictures } },
+            { new: true }
         );
-        return res.status(200).send({message:"update success",newPost: toUpdate})
+
+        if (title !== undefined) updateNumber.title = title;
+        if (message !== undefined) updateNumber.message = message;
+        if (pictures !== undefined) updateNumber.pictures = pictures;
+
+        await updateNumber.save()
+        return res.status(200).send({ message: "update success", newPost: toUpdate, updates: updateNumber })
 
     } catch (e) {
         return res.status(500).send({ message: "update failed", err: e.message })
