@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 
-
 const usersSchema = new mongoose.Schema({
     userFirstName: {
         type: String,
@@ -25,7 +24,6 @@ const usersSchema = new mongoose.Schema({
     optimisticConcurrency: true
 });
 
+const userModel = mongoose.model('userModel', usersSchema, 'users')
 
-const User = mongoose.model('User', usersSchema, 'users')
-
-export default User;
+export default userModel;

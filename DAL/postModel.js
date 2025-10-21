@@ -19,13 +19,20 @@ const postSchema = new mongoose.Schema({
         type: String,
         trim: true,
         required: false
+    },
+    likes: {
+        type: [String],
+        required: false,
+        default: [],
+        trim:true
     }
+
 }, {
     timestamps: true,
     versionKey: '__v',
     optimisticConcurrency: true
 });
 
-const Post = mongoose.model('Post', postSchema, 'posts');
+const postModel = mongoose.model('postModel', postSchema, 'posts');
 
-export default Post;
+export default postModel;
