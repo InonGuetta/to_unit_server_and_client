@@ -1,4 +1,4 @@
-import postModel from '../DAL/postModel.js';
+import postModel from '../models/postModel.js';
 
 export async function createPost(req, res) {
     try {

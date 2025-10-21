@@ -1,5 +1,5 @@
-// import postModel from '../DAL/postModel.js';
-// import userModel from '../DAL/usersModel.js';
+// import postModel from '../models/postModel.js';
+// import userModel from '../models/usersModel.js';
 
 // // challengs 
 // // how combaine bettwen Email User to Post  

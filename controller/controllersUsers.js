@@ -1,10 +1,10 @@
-import userModel from '../DAL/usersModel.js';
+import userModel from '../models/usersModel.js';
 
 export async function createUser(req, res) {
     try {
         const createNewUser = req.body;
 
-        if (!createNewUser) {
+        if (!createNewUser || Object.keys.length === 0) {
             res.status(400).send({ message: "input invalid" })
         }
 
@@ -31,7 +31,7 @@ export async function getAllUser(req, res) {
 export async function getOneUser(req, res) {
     try {
         const { emailUserId } = req.params;
-        
+
         const oneUserInfo = await userModel.findOne({ emailUserId: emailUserId });
         if (!oneUserInfo) {
             return res.status(404).send({ message: "user not found" });
