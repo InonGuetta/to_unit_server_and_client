@@ -41,11 +41,15 @@ export async function register(req, res) {
                 userLastName: createUser.userLastName
             }
         });
+        console.log(hashPassword);
+        console.log(token);
         return;
     } catch (e) {
         res.status(500).send({ message: "register failed", error: e.message })
     }
 }
+
+
 
 export async function login(req, res) {
     try {
@@ -53,6 +57,7 @@ export async function login(req, res) {
         if (!emailUserId || !password) {
             return res.status(400).send({ message: "all fields required" })
         }
+        res.status(200).send({message:"login successed"})
     } catch (e) {
         res.status(500).send({ message: "login failed", error: e.message })
     }

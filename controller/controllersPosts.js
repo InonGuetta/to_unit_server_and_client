@@ -1,19 +1,19 @@
-import postModel from '../models/postModel.js';
+import {
+    createOnePostService,
+    getAllPostsService,
+    getOnePostsService,
+    deletePostService,
+    updatePostService
+} from '../service/postsServices.js';
+
 
 export async function createPost(req, res) {
     try {
-        const createNewPost = req.body;
-
-        if (!createNewPost) {
-            res.status(400).send({ message: "input invalid" })
+        const createPost = await createOnePostService(req.body)
+        if (!createPost) {
+            res.status(400).send({ message: "The input does not meet the required conditions / does not exist" })
         }
-
-        const createPost = new postModel(createNewPost);
-        await createPost.save()
-
-        res.status(200).send({ message: "new post created", post: createPost })
-        return
-
+        res.status(201).send({ message: "post add", post: createPost })
     } catch (e) {
         res.status(500).send({ message: "the added not working", error: e.message })
     }
@@ -21,60 +21,50 @@ export async function createPost(req, res) {
 
 export async function getAllPosts(req, res) {
     try {
-        const allPostsInfo = await postModel.find({})
+        const allPostsInfo = await getAllPostsService()
+        if (!allPostsInfo) {
+            res.status(404).send({ message: "data not found" })
+        }
         res.status(200).send({ message: "get all data succssefuly", posts: allPostsInfo })
-        return allPostsInfo
+        return
     } catch (e) {
-        res.status(500).send({ message: 'get all data failed' })
+        res.status(500).send({ message: "get all data failed", error: e.message })
     }
 }
 
 export async function getOnePost(req, res) {
     try {
-        const onePostInfo = await postModel.findOne({ title: req.params.title });
+        const onePostInfo = await getOnePostsService(req);
         if (!onePostInfo) {
             res.status(404).send({ message: "Post not found" });
         }
-        return res.status(200).send(onePostInfo)
+        res.status(200).send({ message: "the post found", post: onePostInfo })
+        return
     } catch (e) {
-        res.status(500).send({ message: 'get one post failed' })
+        res.status(500).send({ message: 'get one post failed', error: e.message })
     }
 }
 
 export async function deletePost(req, res) {
     try {
-        const { id } = req.params;
-        if (id.length === 0) {
-            return res.status(400).send({ message: "id its empty" })
-        }
-        const deleteOnePost = await postModel.findOneAndDelete({ _id: id })
+        const deleteOnePost = await deletePostService(req)
         if (!deleteOnePost) {
-            return res.status(404).send({ message: "id its not found" })
+            res.status(404).send({ message: "the post to delete not found" })
         }
         res.status(200).send({ message: "the post deleted" })
-
+        return
     } catch (e) {
-        console.log("delete");
         res.status(500).send({ message: "deleted failed" })
     }
 }
 
 export async function updatePost(req, res) {
     try {
-        const { id } = req.params;
-        const { title, message, pictures, likes } = req.body;
-
-        const postInfo = await postModel.findOne({ _id: id });
-        if (!postInfo) return res.status(404).send({ message: 'not found' });
-
-        if (title !== undefined) postInfo.title = title;
-        if (message !== undefined) postInfo.message = message;
-        if (pictures !== undefined) postInfo.pictures = pictures;
-        if (likes !== undefined) postInfo.likes = likes;
-
-        await postInfo.save()
-        return res.status(200).send({ message: "update success", newPost: postInfo })
-
+        const updateOnePost = await updatePostService(req)
+        if (!updateOnePost) {
+            res.status(404).send({ message: "the post not found found" })
+        }
+        return res.status(200).send({ message: "update success", newPost: updateOnePost })
     } catch (e) {
         return res.status(500).send({ message: "update failed", err: e.message })
     }
