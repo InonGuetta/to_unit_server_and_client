@@ -14,6 +14,7 @@ export async function createPost(req, res) {
             res.status(400).send({ message: "The input does not meet the required conditions / does not exist" })
         }
         res.status(201).send({ message: "post add", post: createPost })
+        return
     } catch (e) {
         res.status(500).send({ message: "the added not working", error: e.message })
     }
@@ -64,7 +65,8 @@ export async function updatePost(req, res) {
         if (!updateOnePost) {
             res.status(404).send({ message: "the post not found found" })
         }
-        return res.status(200).send({ message: "update success", newPost: updateOnePost })
+        res.status(200).send({ message: "update success", newPost: updateOnePost })
+        return 
     } catch (e) {
         return res.status(500).send({ message: "update failed", err: e.message })
     }
