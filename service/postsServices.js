@@ -1,51 +1,84 @@
 import postModel from "../models/postModel.js";
 
+
 export async function createOnePostService(data) {
-    if (!data || Object.keys(data).length === 0) {
-        return null;
+    try {
+        if (!data || Object.keys(data).length === 0) {
+            return null;
+        }
+        const insertDbOnePost = new postModel(data)
+        return insertDbOnePost.save()
+    } catch (e) {
+        console.error("Error create post", e.message);
+        throw e;
     }
-    const insertDbOnePost = new postModel(data)
-    return insertDbOnePost.save()
 }
 
 export async function getAllPostsService() {
-    const allPostsInfo = await postModel.find({})
-    if (!allPostsInfo) {
-        return null;
+    try {
+        const allPostsInfo = await postModel.find({})
+        if (!allPostsInfo) {
+            return null;
+        }
+        return allPostsInfo
+    } catch (e) {
+        console.error("Error fetching post", e.message);
+        throw e;
     }
-    return allPostsInfo
 }
 
 export async function getOnePostsService(req) {
-    const onePostsInfo = await postModel.findOne({ id: req.params.id })
-    if (!onePostsInfo) {
-        return null;
+    try {
+        const onePostsInfo = await postModel.findOne({ _id: req.params.id })
+        if (!onePostsInfo) {
+            return null;
+        }
+        return onePostsInfo
+    } catch (e) {
+        console.error("Error fetching post", e.message);
+        throw e;
     }
-    return onePostsInfo
 }
 
 export async function deletePostService(req) {
-    const deleteOnePost = await postModel.findOneAndDelete({ id: req.params.id })
-    if (!deleteOnePost) {
-        return null;
+    try {
+        const deleteOnePost = await postModel.findOneAndDelete({ _id: req.params.id })
+        if (!deleteOnePost) {
+            return null;
+        }
+        return deleteOnePost
+    } catch (e) {
+        console.error("Error delete post", e.message);
+        throw e;
     }
-    return deleteOnePost
 }
 
 export async function updatePostService(req) {
-    const onePostInfoToUpdate = await postModel.findOne({ id: req.params.id });
-    
-    if (!onePostInfoToUpdate) {
-        return null;
+    try {
+        const onePostInfoToUpdate = await postModel.findOne({ _id: req.params.id });
+        if (!onePostInfoToUpdate) {
+            return null;
+        }
+        const { title, message, pictures, likes } = req.body;
+
+        if (title !== undefined) onePostInfoToUpdate.title = title;
+        if (message !== undefined) onePostInfoToUpdate.message = message;
+        if (pictures !== undefined) onePostInfoToUpdate.pictures = pictures;
+
+        // create function of likes
+        // if (likes !== undefined) onePostInfoToUpdate.likes = likes;
+        await onePostInfoToUpdate.save()
+        return onePostInfoToUpdate
+    } catch (e) {
+        console.error("Error update post", e.message);
+        throw e;
     }
-    
-    const { title, message, pictures, likes } = req.body;
+}
 
-    if (title !== undefined) onePostInfoToUpdate.title = title;
-    if (message !== undefined) onePostInfoToUpdate.message = message;
-    if (pictures !== undefined) onePostInfoToUpdate.pictures = pictures;
-    if (likes !== undefined) onePostInfoToUpdate.likes = likes;
-
-    await onePostInfoToUpdate.save()
-    return onePostInfoToUpdate
+export async function addLikeService(req, res) {
+    // אבחון ה user וההוצאה של emailId שלו על מנת להוסיף אותו למערך של הלייקים 
+    // אבחון ה post שלמערך של הלייקים שלו אתה צריך להוסיף את המייל שלו 
+    // אחרי שמצאת את הפוסטט ואת היוזר
+    // אני צריך לעדכן את ה מערך הלייק של הpot
+    // בערך הסטרינג של ה user 
 }

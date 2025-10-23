@@ -1,12 +1,6 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import userModel from '../models/usersModel.js';
+import { validExsitUserService, createOneUserService, getOneUserService } from "../service/usersServices.js";
+import { hashPassword, signToken, compearePass } from "../service/authServices.js";
 
-function signToken(userId) {
-    return jwt.sign({ sub: userId }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_EXPIRES || "1h"
-    });
-}
 
 export async function register(req, res) {
     try {
@@ -16,23 +10,18 @@ export async function register(req, res) {
             return res.status(400).send({ message: "all fields required required" });
         }
 
-        const exists = await userModel.findOne({ emailUserId });
-        if (exists) return res.status(409).send({ message: "email already in use" });
+        if (await validExsitUserService(emailUserId)) {
+            res.status(409).send({ message: "email already in use" })
+        }
+        const new_pass = await hashPassword(req.body.password);
+        req.body.password = new_pass
 
-        const hashPassword = await bcrypt.hash(password, 12);
-        const createUser = await userModel.create({
-            emailUserId,
-            password: hashPassword,
-            userFirstName,
-            userLastName
-        })
-        // this code not equal to prev code 
-        // const createUser = createUser(req, res)
+        const createUser = await createOneUserService(req.body)
 
         const token = signToken(createUser._id);
         res.status(201).send({
             message: "registerd",
-            token,
+            token: token,
             createUser: {
                 _id: createUser._id,
                 emailUserId: createUser.emailUserId,
@@ -49,15 +38,26 @@ export async function register(req, res) {
     }
 }
 
-
-
 export async function login(req, res) {
     try {
         const { emailUserId, password } = req.body;
         if (!emailUserId || !password) {
             return res.status(400).send({ message: "all fields required" })
         }
-        res.status(200).send({message:"login successed"})
+
+
+        // user_info = find one user
+        const userInfo = await getOneUserService(emailUserId);
+        // compeare password
+        const validateDetails = await compearePass(password, userInfo.password)
+        // userinfo.id create new token 
+        if (validateDetails) {
+            const token = signToken(userInfo._id)
+            res.status(200).send({ message: "login successed", token: token })
+        } else {
+            res.status(401).send({ message: "The username and password are incorrect" })
+        }
+        // response token!
     } catch (e) {
         res.status(500).send({ message: "login failed", error: e.message })
     }

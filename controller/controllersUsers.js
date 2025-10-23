@@ -1,4 +1,3 @@
-import userModel from '../models/usersModel.js';
 import {
     createOneUserService,
     getAllUsersService,
@@ -26,8 +25,8 @@ export async function createUser(req, res) {
 export async function getAllUser(req, res) {
     try {
         const allUsersInfo = await getAllUsersService()
-        if(!allUsersInfo){
-            res.status(404).send({message:"users not found"})
+        if (!allUsersInfo) {
+            res.status(404).send({ message: "users not found" })
         }
 
         res.status(200).send({ message: "get all data succssefuly", user: allUsersInfo })
@@ -39,7 +38,8 @@ export async function getAllUser(req, res) {
 
 export async function getOneUser(req, res) {
     try {
-        const oneUserInfo = await getOneUserService(req)
+        const { emailUserId } = req.params;
+        const oneUserInfo = await getOneUserService({ emailUserId })
         if (!oneUserInfo) {
             return res.status(404).send({ message: "user not found" });
         }
@@ -62,36 +62,15 @@ export async function deleteUser(req, res) {
     }
 }
 
-// export async function updateUser(req, res) {
-//     try {
-//         const { id } = req.params;
-//         const { userFirstName, userLastName, password, emailUserId } = req.body;
-
-//         const userInfo = await userModel.findOne({ _id: id });
-//         if (!userInfo) return res.status(404).send({ message: 'not found' });
-
-//         if (userFirstName !== undefined) userInfo.userFirstName = userFirstName;
-//         if (userLastName !== undefined) userInfo.userLastName = userLastName;
-//         if (password !== undefined) userInfo.password = password;
-//         if (emailUserId !== undefined) userInfo.emailUserId = emailUserId;
-
-//         await userInfo.save()
-//         return res.status(200).send({ message: "update success", newUser: userInfo, })
-
-//     } catch (e) {
-//         return res.status(500).send({ message: "update failed", err: e.message })
-//     }
-// }
-
 export async function updateUser(req, res) {
     try {
         const updateOneUser = await updateUserService(req);
-        if (updateOneUser === null){
+        if (updateOneUser === null) {
             return res.status(404).send({ message: 'user not found' });
         }
 
-        if(updateOneUser === "email already exist"){
-            res.status(409).send({message:"this email already exsist please try other"})
+        if (updateOneUser === "email already exist") {
+            res.status(409).send({ message: "this email already exsist please try other" })
             return
         }
         return res.status(200).send({ message: "update success", newUser: updateOneUser, })
@@ -99,45 +78,3 @@ export async function updateUser(req, res) {
         return res.status(500).send({ message: "update failed", err: e.message })
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// export async function updateUser(req, res) {
-//   try {
-//     const { id } = req.params;
-//     const updated = await updateUserService(id, req.body);
-//     if (updated === null) return res.status(404).send({ message: 'user not found' });
-//     return res.status(200).send({ message: 'update success', newUser: updated });
-//   } catch (e) {
-//     return res.status(500).send({ message: 'update failed', err: e.message });
-//   }
-// }

@@ -9,9 +9,9 @@ dotenv.config();
 const server = express();
 
 server.use(express.json());
-server.use('/', routerPosts);
-server.use('/', routerUsers);
-server.use('/', routerAuth);
+server.use('/posts', routerPosts);
+server.use('/users', routerUsers);
+server.use('/auth', routerAuth);
 
 
 (async () => {
