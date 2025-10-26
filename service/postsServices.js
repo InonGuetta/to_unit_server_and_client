@@ -59,14 +59,12 @@ export async function updatePostService(req) {
         if (!onePostInfoToUpdate) {
             return null;
         }
-        const { title, message, pictures, likes } = req.body;
+        const { title, message, pictures } = req.body;
 
         if (title !== undefined) onePostInfoToUpdate.title = title;
         if (message !== undefined) onePostInfoToUpdate.message = message;
         if (pictures !== undefined) onePostInfoToUpdate.pictures = pictures;
 
-        // create function of likes
-        // if (likes !== undefined) onePostInfoToUpdate.likes = likes;
         await onePostInfoToUpdate.save()
         return onePostInfoToUpdate
     } catch (e) {
@@ -75,10 +73,22 @@ export async function updatePostService(req) {
     }
 }
 
-export async function addLikeService(req, res) {
-    // אבחון ה user וההוצאה של emailId שלו על מנת להוסיף אותו למערך של הלייקים 
-    // אבחון ה post שלמערך של הלייקים שלו אתה צריך להוסיף את המייל שלו 
-    // אחרי שמצאת את הפוסטט ואת היוזר
-    // אני צריך לעדכן את ה מערך הלייק של הpot
-    // בערך הסטרינג של ה user 
+export async function addLikeService(userEmailiId, postId) {
+    try {
+        const onePost = await postModel.findOne({ _id: postId });
+        if (!onePost) throw new Error("post not found");
+
+        if (!onePost.likes.includes(userEmailiId)) {
+            onePost.likes.push(userEmailiId);
+            await onePost.save()
+            return
+        }
+        
+        onePost.likes = onePost.likes.filter(item => item !== userEmailiId);
+        await onePost.save();
+        return
+    } catch (e) {
+        console.error("Error update addLike post", e.message);
+        throw e;
+    }
 }

@@ -74,8 +74,6 @@ export async function updateUserService(req) {
         if (userFirstName !== undefined) onePostInfoToUpdate.userFirstName = userFirstName;
         if (userLastName !== undefined) onePostInfoToUpdate.userLastName = userLastName;
         if (emailUserId !== undefined) onePostInfoToUpdate.emailUserId = emailUserId;
-        //create function of password with encrypt password
-        // if (password !== undefined) onePostInfoToUpdate.password = password;
 
         await onePostInfoToUpdate.save()
         return onePostInfoToUpdate
