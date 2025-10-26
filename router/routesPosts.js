@@ -4,7 +4,8 @@ import {
     getAllPosts,
     getOnePost,
     deletePost,
-    updatePost
+    updatePost,
+    toggleLike
 } from '../controller/controllersPosts.js';
 const routerPosts = express.Router();
 
@@ -13,5 +14,6 @@ routerPosts.get('/get-all-posts', getAllPosts);
 routerPosts.get('/get-one-post/:id', getOnePost);
 routerPosts.delete('/delete-post/:id', deletePost);
 routerPosts.patch('/update-post/:id', updatePost);
+routerPosts.patch('/toggle-like/:id', toggleLike);
 
 export default routerPosts;

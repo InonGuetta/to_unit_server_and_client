@@ -6,9 +6,7 @@ import {
     updatePostService,
     addLikeService
 } from '../service/postsServices.js';
-import postModel from '../models/postModel.js';
-import userModel from '../models/usersModel.js';
-
+import { getOneUserService } from '../service/usersServices.js';
 
 export async function createPost(req, res) {
     try {
@@ -78,15 +76,17 @@ export async function updatePost(req, res) {
 
 export async function toggleLike(req, res) {
     try {
-        const { emailUserId, id } = req.body;
-        const emailId = await userModel.findOne({ emailUserId: emailUserId })
-        const postId = await postModel.findOne({ _id: id })
+        console.log("Insert post")
+        const postId = req.params.id
+        const { emailUserId } = req.body;
+        const userInfo = await getOneUserService(emailUserId)
+        const postInfo = await getOnePostService(postId)
 
-        if (!emailId || !postId) {
+        if (!userInfo || !postInfo) {
             res.status(404).send({ message: "data of user or post not found" })
         }
 
-        if (!addLikeService(emailId.emailUserId, postId._id)) res.status(400).send({ message: "The command failed." })
+        if (!addLikeService(userInfo.emailUserId, postInfo._id)) res.status(400).send({ message: "The command failed." })
         res.status(200).send({message:"update likes work"})
     } catch (e) {
         res.status(500).send({ message: "update like failed", err: e.message })

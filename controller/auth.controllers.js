@@ -3,7 +3,7 @@ import { hashPasswordService, signTokenService, compearePassService } from "../s
 
 
 export async function register(req, res) {
-    try {
+        try {
         const { emailUserId, password, userFirstName, userLastName } = req.body;
 
         if (!emailUserId || !password || !userFirstName || !userLastName) {
