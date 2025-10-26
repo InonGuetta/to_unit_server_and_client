@@ -7,12 +7,12 @@ const postSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: false,
+        required: true,
         trim: true
     },
     message: {
         type: String,
-        required: false,
+        required: true,
         trim: true
     },
     pictures: {
@@ -26,7 +26,7 @@ const postSchema = new mongoose.Schema({
         default: [],
         trim:true
     }
-
+ 
 }, {
     timestamps: true,
     versionKey: '__v',

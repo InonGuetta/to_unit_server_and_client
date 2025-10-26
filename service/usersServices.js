@@ -35,7 +35,7 @@ export async function getAllUsersService() {
 
 export async function getOneUserService(emailUserId) {
     try {
-        const oneUserInfo = await userModel.findOne({emailUserId})
+        const oneUserInfo = await userModel.findOne({ emailUserId })
         if (!oneUserInfo) {
             return null
         }
@@ -46,9 +46,9 @@ export async function getOneUserService(emailUserId) {
     }
 }
 
-export async function deleteUserService(req) {
+export async function deleteUserService(userId) {
     try {
-        const deleteOneUser = await userModel.findOneAndDelete({ id: req.params.id })
+        const deleteOneUser = await userModel.findOneAndDelete({ userId })
         if (!deleteOneUser) {
             return null
         }
@@ -59,22 +59,21 @@ export async function deleteUserService(req) {
     }
 }
 
-export async function updateUserService(req) {
+export async function updateUserService(userId, data) {
     try {
-
-        const onePostInfoToUpdate = await userModel.findOne({ _id: req.params.id })
+        const onePostInfoToUpdate = await userModel.findOne({ userId })
         if (!onePostInfoToUpdate) {
             return null
         }
-        const { userFirstName, userLastName, password, emailUserId } = req.body;
-
-        const exist = await userModel.findOne({ emailUserId })
+        const exist = await userModel.findOne({ emailUserId: data.emailUserId })
         if (exist) return "email already exist";
 
-        if (userFirstName !== undefined) onePostInfoToUpdate.userFirstName = userFirstName;
-        if (userLastName !== undefined) onePostInfoToUpdate.userLastName = userLastName;
-        if (emailUserId !== undefined) onePostInfoToUpdate.emailUserId = emailUserId;
+        const toUpdate = {}
+        if (data.userFirstName !== undefined) toUpdate.userFirstName = data.userFirstName;
+        if (data.userLastName !== undefined) toUpdate.userLastName = data.userLastName;
+        if (data.emailUserId !== undefined) toUpdate.emailUserId = data.emailUserId;
 
+        onePostInfoToUpdate.set(toUpdate)
         await onePostInfoToUpdate.save()
         return onePostInfoToUpdate
     } catch (e) {

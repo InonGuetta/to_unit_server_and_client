@@ -38,8 +38,7 @@ export async function getAllUser(req, res) {
 
 export async function getOneUser(req, res) {
     try {
-        const { emailUserId } = req.params;
-        const oneUserInfo = await getOneUserService({ emailUserId })
+        const oneUserInfo = await getOneUserService(req.params.emailUserId)
         if (!oneUserInfo) {
             return res.status(404).send({ message: "user not found" });
         }
@@ -51,7 +50,7 @@ export async function getOneUser(req, res) {
 
 export async function deleteUser(req, res) {
     try {
-        const deleteOneUser = await deleteUserService(req)
+        const deleteOneUser = await deleteUserService(req.params.id)
         if (!deleteOneUser) {
             return res.status(404).send({ message: "id its not found" })
         }
@@ -64,7 +63,7 @@ export async function deleteUser(req, res) {
 
 export async function updateUser(req, res) {
     try {
-        const updateOneUser = await updateUserService(req);
+        const updateOneUser = await updateUserService(req.params.id, req.body);
         if (updateOneUser === null) {
             return res.status(404).send({ message: 'user not found' });
         }

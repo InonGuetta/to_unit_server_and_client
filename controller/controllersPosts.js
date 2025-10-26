@@ -23,6 +23,7 @@ export async function createPost(req, res) {
     }
 }
 
+//clean and work
 export async function getAllPosts(req, res) {
     try {
         const allPostsInfo = await getAllPostsService()
@@ -38,7 +39,7 @@ export async function getAllPosts(req, res) {
 
 export async function getOnePost(req, res) {
     try {
-        const onePostInfo = await getOnePostsService(req);
+        const onePostInfo = await getOnePostsService(req.params.id);
         if (!onePostInfo) {
             res.status(404).send({ message: "Post not found" });
         }
@@ -51,7 +52,7 @@ export async function getOnePost(req, res) {
 
 export async function deletePost(req, res) {
     try {
-        const deleteOnePost = await deletePostService(req)
+        const deleteOnePost = await deletePostService(req.params.id)
         if (!deleteOnePost) {
             res.status(404).send({ message: "the post to delete not found" })
         }
@@ -64,7 +65,7 @@ export async function deletePost(req, res) {
 
 export async function updatePost(req, res) {
     try {
-        const updateOnePost = await updatePostService(req)
+        const updateOnePost = await updatePostService(req.params.id ,req.body)
         if (!updateOnePost) {
             res.status(404).send({ message: "the post not found found" })
         }

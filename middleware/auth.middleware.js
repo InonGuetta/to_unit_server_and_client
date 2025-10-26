@@ -1,3 +1,4 @@
+// תסרוק את כל הקוד ותבדוק האם יש לו שימוש או שהוא רק קוד רדום ומוכן לשימוש 
 import jwt from "jsonwebtoken";
 
 export function auth(req, res, next) {

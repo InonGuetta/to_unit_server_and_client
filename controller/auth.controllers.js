@@ -1,5 +1,5 @@
 import { validExsitUserService, createOneUserService, getOneUserService } from "../service/usersServices.js";
-import { hashPassword, signToken, compearePass } from "../service/authServices.js";
+import { hashPasswordService, signTokenService, compearePassService } from "../service/authServices.js";
 
 
 export async function register(req, res) {
@@ -7,18 +7,18 @@ export async function register(req, res) {
         const { emailUserId, password, userFirstName, userLastName } = req.body;
 
         if (!emailUserId || !password || !userFirstName || !userLastName) {
-            return res.status(400).send({ message: "all fields required required" });
+            return res.status(400).send({ message: "all fields required" });
         }
-
+ 
         if (await validExsitUserService(emailUserId)) {
             res.status(409).send({ message: "email already in use" })
         }
-        const new_pass = await hashPassword(req.body.password);
+        const new_pass = await hashPasswordService(req.body.password);
         req.body.password = new_pass
 
         const createUser = await createOneUserService(req.body)
 
-        const token = signToken(createUser._id);
+        const token = signTokenService(createUser._id);
         res.status(201).send({
             message: "registerd",
             token: token,
@@ -30,8 +30,6 @@ export async function register(req, res) {
                 userLastName: createUser.userLastName
             }
         });
-        console.log(hashPassword);
-        console.log(token);
         return;
     } catch (e) {
         res.status(500).send({ message: "register failed", error: e.message })
@@ -45,19 +43,14 @@ export async function login(req, res) {
             return res.status(400).send({ message: "all fields required" })
         }
 
-
-        // user_info = find one user
         const userInfo = await getOneUserService(emailUserId);
-        // compeare password
-        const validateDetails = await compearePass(password, userInfo.password)
-        // userinfo.id create new token 
+        const validateDetails = await compearePassService(password, userInfo.password)
         if (validateDetails) {
-            const token = signToken(userInfo._id)
+            const token = signTokenService(userInfo._id)
             res.status(200).send({ message: "login successed", token: token })
         } else {
             res.status(401).send({ message: "The username and password are incorrect" })
         }
-        // response token!
     } catch (e) {
         res.status(500).send({ message: "login failed", error: e.message })
     }

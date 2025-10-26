@@ -3,7 +3,8 @@ import postModel from "../models/postModel.js";
 
 export async function createOnePostService(data) {
     try {
-        if (!data || Object.keys(data).length === 0) {
+        if (!data ||
+            Object.keys(data).length === 0) {
             return null;
         }
         const insertDbOnePost = new postModel(data)
@@ -13,7 +14,7 @@ export async function createOnePostService(data) {
         throw e;
     }
 }
-
+ 
 export async function getAllPostsService() {
     try {
         const allPostsInfo = await postModel.find({})
@@ -27,9 +28,9 @@ export async function getAllPostsService() {
     }
 }
 
-export async function getOnePostsService(req) {
+export async function getOnePostsService(postId) {
     try {
-        const onePostsInfo = await postModel.findOne({ _id: req.params.id })
+        const onePostsInfo = await postModel.findOne({postId })
         if (!onePostsInfo) {
             return null;
         }
@@ -40,9 +41,9 @@ export async function getOnePostsService(req) {
     }
 }
 
-export async function deletePostService(req) {
+export async function deletePostService(postId) {
     try {
-        const deleteOnePost = await postModel.findOneAndDelete({ _id: req.params.id })
+        const deleteOnePost = await postModel.findOneAndDelete({postId})
         if (!deleteOnePost) {
             return null;
         }
@@ -53,18 +54,18 @@ export async function deletePostService(req) {
     }
 }
 
-export async function updatePostService(req) {
+export async function updatePostService(postId, data) {
     try {
-        const onePostInfoToUpdate = await postModel.findOne({ _id: req.params.id });
+        const onePostInfoToUpdate = await postModel.findOne({postId});
         if (!onePostInfoToUpdate) {
             return null;
         }
-        const { title, message, pictures } = req.body;
+        const toUpdate = {}
+        if (data.title !== undefined) toUpdate.title = data.title;
+        if (data.message !== undefined) toUpdate.message = data.message;
+        if (data.pictures !== undefined) toUpdate.pictures = data.pictures;
 
-        if (title !== undefined) onePostInfoToUpdate.title = title;
-        if (message !== undefined) onePostInfoToUpdate.message = message;
-        if (pictures !== undefined) onePostInfoToUpdate.pictures = pictures;
-
+        onePostInfoToUpdate.set(toUpdate)
         await onePostInfoToUpdate.save()
         return onePostInfoToUpdate
     } catch (e) {
