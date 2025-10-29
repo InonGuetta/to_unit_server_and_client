@@ -1,6 +1,5 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { Server } from "socket.io";
 import http from 'http';
 import routerPosts from './router/routesPosts.js';
 import routerUsers from './router/routesUsers.js';
@@ -9,6 +8,7 @@ import { connectDB } from './config/db.js';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 import { initIO } from './socket/index.js';
+import cors from 'cors';
 
 
 dotenv.config();
@@ -27,6 +27,7 @@ io.on('connection', (socket) => {
   });
 });
 
+server.use(cors());
 server.use(express.json());
 server.use('/posts', routerPosts);
 server.use('/users', routerUsers);
