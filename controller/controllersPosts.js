@@ -7,6 +7,8 @@ import {
     addLikeService
 } from '../service/postsServices.js';
 import { getOneUserService } from '../service/usersServices.js';
+import { getIO } from '../socket/index.js';
+
 
 export async function createPost(req, res) {
     try {
@@ -14,6 +16,7 @@ export async function createPost(req, res) {
         if (!createPost) {
             res.status(400).send({ message: "The input does not meet the required conditions / does not exist" })
         }
+        getIO().emit("posts:created", { post: createPost });
         res.status(201).send({ message: "post add", post: createPost })
         return
     } catch (e) {
@@ -21,7 +24,6 @@ export async function createPost(req, res) {
     }
 }
 
-//clean and work
 export async function getAllPosts(req, res) {
     try {
         const allPostsInfo = await getAllPostsService()
@@ -54,6 +56,7 @@ export async function deletePost(req, res) {
         if (!deleteOnePost) {
             res.status(404).send({ message: "the post to delete not found" })
         }
+        getIO().emit("posts:deleted", { postId: updated.postId || req.params.id, post: updated })
         res.status(200).send({ message: "the post deleted" })
         return
     } catch (e) {
@@ -63,10 +66,11 @@ export async function deletePost(req, res) {
 
 export async function updatePost(req, res) {
     try {
-        const updateOnePost = await updatePostService(req.params.id ,req.body)
+        const updateOnePost = await updatePostService(req.params.id, req.body)
         if (!updateOnePost) {
             res.status(404).send({ message: "the post not found found" })
         }
+        getIO().emit("posts:updatesd", { postId: updateOnePost._id || req.params.id, post: updateOnePost })
         res.status(200).send({ message: "update success", newPost: updateOnePost })
         return
     } catch (e) {
@@ -80,14 +84,16 @@ export async function toggleLike(req, res) {
         const postId = req.params.id
         const { emailUserId } = req.body;
         const userInfo = await getOneUserService(emailUserId)
-        const postInfo = await getOnePostService(postId)
+        const postInfo = await getOnePostsService(postId)
 
         if (!userInfo || !postInfo) {
             res.status(404).send({ message: "data of user or post not found" })
         }
 
         if (!addLikeService(userInfo.emailUserId, postInfo._id)) res.status(400).send({ message: "The command failed." })
-        res.status(200).send({message:"update likes work"})
+        getIO().emit("posts:updated", { postId, post: refreshed, likesCount: Array.isArray(refreshed?.likes) ? refreshed.likes.length : 0
+    });
+        res.status(200).send({ message: "update likes work" })
     } catch (e) {
         res.status(500).send({ message: "update like failed", err: e.message })
     }
